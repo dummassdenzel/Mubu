@@ -66,53 +66,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 }
                 break;
 
-            case 'units':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
-                if (count($request) > 1) {
-                    echo json_encode($get->get_units($request[1]));
-                } else {
-                    echo json_encode($get->get_units());
-                }
-                break;
-            case 'tenants':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
-                if (count($request) > 1) {
-                    echo json_encode($get->get_tenants($request[1]));
-                } else {
-                    echo json_encode($get->get_tenants());
-                }
-                break;
-            case 'billings':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
-                if (count($request) > 1) {
-                    echo json_encode($get->get_billings($request[1]));
-                } else {
-                    echo json_encode($get->get_billings());
-                }
-                break;
-
-            case 'dashboard-stats':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
-                if (count($request) > 1) {
-                    echo json_encode($get->get_dashboard_stats());
-                } else {
-                    echo json_encode($get->get_dashboard_stats());
-                }
-                break;
-
-            case 'lease-history':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
-                if (count($request) > 1) {
-                    echo json_encode($get->getLeaseHistory($request[1]));
-                } else {
-                    echo json_encode($get->getLeaseHistory());
-                }
-                break;
 
 
             default:
@@ -125,8 +78,24 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
 
     case 'POST':
-        // RETRIEVE AND DECODE DATA FROM THE BODY
-        $data = json_decode(file_get_contents("php://input"));
+        // Check the Content-Type header
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+        if (strpos($contentType, 'application/json') !== false) {
+            // Handle JSON data
+            $data = json_decode(file_get_contents("php://input"));
+            // Process JSON data
+        } elseif (strpos($contentType, 'multipart/form-data') !== false) {
+            // Handle form data
+            $data = $_POST;
+            $files = $_FILES;
+            // Process form data and files
+        } else {
+            // Unsupported content type
+            echo "Unsupported Content Type";
+            http_response_code(415);
+            exit();
+        }
         switch ($request[0]) {
 
             case 'adduser':
@@ -137,20 +106,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 echo json_encode($post->userLogin($data));
                 break;
 
-            case 'addtenant':
-                // $user = $auth->authenticateRequest();
-                echo json_encode($post->addTenant($data));
-                break;
 
-            case 'renewlease':
-                // $user = $auth->authenticateRequest();
-                echo json_encode($post->renewLease($data));
-                break;
-
-            case 'endlease':
-                // $user = $auth->authenticateRequest();
-                echo json_encode($post->endLease($data));
-                break;
 
             default:
                 // RESPONSE FOR UNSUPPORTED REQUESTS
@@ -162,14 +118,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     case 'DELETE':
         switch ($request[0]) {
-            case 'deleteuser':
-                if (isset($request[1])) {
-                    echo json_encode($delete->delete_user($request[1]));
-                } else {
-                    echo "Submission ID not provided";
-                    http_response_code(400);
-                }
-                break;
+
 
             default:
                 // Return a 403 response for unsupported requests
