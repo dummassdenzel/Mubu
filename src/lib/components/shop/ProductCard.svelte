@@ -22,11 +22,13 @@
         }
     }}
     tabindex="0"
-    class="group p-4 sm:p-6 md:p-4 flex flex-col gap-4 rounded-lg border border-transparent hover:border-blue-700 focus:border-blue-700 focus:outline-none cursor-pointer transition-all duration-200"
+    class="group p-4 sm:p-6 md:p-4 flex flex-col gap-4 rounded-lg border border-transparent hover:border-black cursor-pointer transition-all duration-200"
     aria-label={`View details for ${product.name}`}
 >
     <!-- Image Section with loading state -->
-    <div class="bg-accent h-[40vh] w-[35vh] px-4 overflow-hidden relative">
+    <div
+        class="bg-accent h-[40vh] w-[35vh] max-sm:h-[30vh] max-sm:w-[25vh] px-4 overflow-hidden relative"
+    >
         {#if !imageLoaded}
             <div
                 class="absolute inset-0 flex items-center justify-center bg-gray-100"

@@ -25,16 +25,34 @@
     >
         <a
             href="/shop"
-            class="text-white p-5 text-2xl max-sm:text-lg font-bold rounded-xl bg-red-500 shadow-md"
+            class="text-white p-5 text-2xl max-sm:text-lg font-bold rounded-xl bg-red-500 shadow-md flex items-center gap-2 hover:bg-red-600 transition-colors"
         >
-            <h1>Shop Now!</h1>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-shopping-cart"
+            >
+                <circle cx="8" cy="21" r="1" />
+                <circle cx="19" cy="21" r="1" />
+                <path
+                    d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+                />
+            </svg>
+            Shop Now!
         </a>
 
         <a
             href="/contact"
-            class="text-black p-5 text-2xl max-sm:text-lg font-bold rounded-xl bg-white shadow-md"
+            class="text-black p-5 text-2xl max-sm:text-lg font-bold rounded-xl bg-white shadow-md hover:bg-gray-50 transition-colors"
         >
-            <h1>Contact Me!</h1>
+            Contact Me!
         </a>
     </div>
 
@@ -57,7 +75,7 @@
         right: -18rem;
         width: 130vh;
         height: 130vh;
-        background-color: #fff8a7; /* bg-primary color */
+        background-color: #fff8a7;
         border-radius: 250px;
         transform: rotate(70deg);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

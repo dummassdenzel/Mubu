@@ -26,10 +26,22 @@
   >
     <button
       on:click={goTop}
-      class="ml-auto rounded-full bg-slate-900 text-blue-400 px-3 sm:px-4 hover:bg-slate-800 cursor-pointer aspect-square grid place-items-center"
+      class="ml-auto rounded-full bg-primary text-black p-2 hover:bg-black hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
       aria-label="Scroll to top"
     >
-      <i class="fa-solid fa-arrow-up"></i>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-arrow-up"
+        ><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg
+      >
     </button>
   </div>
 

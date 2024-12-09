@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import ProductCard from "$lib/components/shop/ProductCard.svelte";
   import ProductModal from "$lib/components/shop/ProductModal.svelte";
   import type { Product } from "$lib/stores/products";
   import { products } from "$lib/stores/products";
+  import { cart } from "$lib/stores/cart";
 
   let selectedProduct: Product | null = null;
   let activeCategory = "All";
+  let mounted = false;
 
   const categories = [
     "All",
@@ -17,79 +19,131 @@
     "Cards",
   ];
 
+  // Get total items in cart
+  $: cartItemCount = $cart.reduce((sum, item) => sum + item.quantity, 0);
+
   onMount(async () => {
     try {
       await products.fetchProducts();
+      mounted = true;
     } catch (error) {
       console.error(error);
     }
   });
 
+  onDestroy(() => {
+    mounted = false;
+    selectedProduct = null;
+  });
+
   function filterByCategory(category: string) {
+    if (!mounted) return;
     activeCategory = category;
     products.setCategory(category);
   }
 
   function handleOpenModal(product: Product) {
+    if (!mounted) return;
     selectedProduct = product;
   }
 
   function handleCloseModal() {
+    if (!mounted) return;
     selectedProduct = null;
   }
 
   function handleAddToCart(event: CustomEvent<Product>) {
+    if (!mounted) return;
     const product = event.detail;
-    // TODO: Implement add to cart functionality
-    console.log("Adding to cart:", product);
+    cart.addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      imageUrl: product.imageUrl,
+    });
     handleCloseModal();
   }
 </script>
 
 <!-- WHOLE SECTION -->
 <section class="flex flex-col md:flex-row">
-  <aside
-    class="md:w-64 md:h-screen w-full md:block bg-white shadow-2xl sticky top-[0]"
-  >
-    <ul
-      class="gap-4 md:gap-0 text-black p-5 text-sm md:text-xl flex md:flex-col flex-row overflow-auto justify-center md:justify-center md:mt-10"
+  {#if mounted}
+    <aside
+      class="md:w-64 z-[10] md:h-screen w-full md:block bg-white shadow-2xl sticky top-[0] flex flex-col justify-between"
     >
-      {#each categories as category}
-        <button
-          class="md:border-b md:border-slate-300 md:py-3 {activeCategory ===
-          category
-            ? 'text-red-500 font-bold'
-            : ''}"
-          on:click={() => filterByCategory(category)}
-        >
-          {category}
-        </button>
-      {/each}
-    </ul>
-  </aside>
-
-  <!-- CONTENT -->
-  <div class="flex flex-1 justify-center py-16 px-12 max-sm:p-5 max-md:p-5">
-    <!--  ITEMS -->
-    <section class="overflow-x-auto">
-      <div
-        class="flex flex-wrap justify-evenly gap-4 max-sm:gap-2 max-md:gap-2"
+      <ul
+        class="gap-4 md:gap-0 text-black p-5 text-sm md:text-xl flex md:flex-col flex-row overflow-auto justify-center md:justify-center md:mt-7"
       >
-        {#each $products as product}
-          <ProductCard {product} openModal={handleOpenModal} />
+        {#each categories as category}
+          <button
+            class="md:border-b md:border-slate-300 md:py-3 {activeCategory ===
+            category
+              ? 'text-red-500 font-bold'
+              : ''}"
+            on:click={() => filterByCategory(category)}
+          >
+            {category}
+          </button>
         {/each}
-      </div>
+      </ul>
 
-      {#if selectedProduct}
-        <ProductModal
-          product={selectedProduct}
-          isOpen={!!selectedProduct}
-          on:close={handleCloseModal}
-          on:addToCart={handleAddToCart}
-        />
+      <!-- Cart Link - Hidden on mobile -->
+      <a
+        href="/cart"
+        class="hidden md:flex mt-10 items-center justify-evenly mx-5 p-4 bg-hot text-white hover:bg-red-600 transition-colors"
+      >
+        <span class="flex items-center gap-2">
+          <i class="fa-solid fa-shopping-cart"></i>
+          Your Cart
+        </span>
+        {#if cartItemCount > 0}
+          <span
+            class="bg-white text-hot rounded-full w-6 h-6 flex items-center justify-center text-sm"
+          >
+            {cartItemCount}
+          </span>
+        {/if}
+      </a>
+    </aside>
+
+    <!-- CONTENT -->
+    <div class="flex flex-1 justify-center py-16 px-12 max-sm:p-5 max-md:p-5">
+      <section class="overflow-x-auto">
+        <div
+          class="flex flex-wrap justify-around gap-4 max-sm:gap-2 max-md:gap-2"
+        >
+          {#each $products as product}
+            <ProductCard {product} openModal={handleOpenModal} />
+          {/each}
+        </div>
+
+        {#if selectedProduct && mounted}
+          <ProductModal
+            product={selectedProduct}
+            isOpen={!!selectedProduct}
+            on:close={handleCloseModal}
+            on:addToCart={handleAddToCart}
+          />
+        {/if}
+      </section>
+    </div>
+
+    <!-- Add floating cart button for mobile -->
+    <a
+      href="/cart"
+      class="md:hidden fixed bottom-6 left-6 z-50 w-14 h-14 bg-hot text-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-colors"
+      aria-label="View Cart"
+    >
+      <i class="fa-solid fa-shopping-cart text-xl"></i>
+      {#if cartItemCount > 0}
+        <span
+          class="absolute -top-2 -right-2 bg-white text-hot rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold"
+        >
+          {cartItemCount}
+        </span>
       {/if}
-    </section>
-  </div>
+    </a>
+  {/if}
 </section>
 
 <style>

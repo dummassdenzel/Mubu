@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Product } from "$lib/stores/products";
+    import { cart } from "$lib/stores/cart";
     import { fade } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
 
@@ -10,6 +11,20 @@
 
     export let product: Product;
     export let isOpen: boolean;
+
+    function handleAddToCart() {
+        cart.addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            imageUrl: product.imageUrl,
+        });
+
+        // NOTE TO SELF: ADD TOAST NOTIFICATION HERE
+        console.log("Added to cart!");
+
+        dispatch("close");
+    }
 
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isOpen) {
@@ -93,7 +108,7 @@
                         <!-- Add to Cart Button -->
                         <button
                             class="bg-hot text-white text-2xl py-1 px-10 font-primary mb-10 hover:bg-red-600 transition-colors disabled:bg-gray-400"
-                            on:click={() => dispatch("addToCart", product)}
+                            on:click={handleAddToCart}
                             disabled={!product.stock}
                         >
                             {product.stock ? "Add to Cart" : "Out of Stock"}

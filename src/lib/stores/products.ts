@@ -20,7 +20,7 @@ function createProductStore() {
     const { subscribe, set, update } = writable<Product[]>([]);
     const { subscribe: subscribeToCategoryFilter, set: setCategory } = writable<string>('All');
 
-    // Create a derived store for filtered products
+    // DERIVED STORE FOR FILTERING PRODUCTS BY CATEGORY
     const filteredProducts = derived(
         [{ subscribe }, { subscribe: subscribeToCategoryFilter }],
         ([$products, $category]) => {
