@@ -65,7 +65,15 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     echo json_encode($get->get_users());
                 }
                 break;
-
+            case 'products':
+                // ENDPOINT PROTECTION
+                // $user = $auth->authenticateRequest();
+                if (count($request) > 1) {
+                    echo json_encode($get->get_products($request[1]));
+                } else {
+                    echo json_encode($get->get_products());
+                }
+                break;
 
 
             default:

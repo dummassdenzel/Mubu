@@ -1,5 +1,6 @@
 <script>
-  import Header from "$lib/Header.svelte";
+  import Navbar from "$lib/components/Navbar.svelte";
+  import Footer from "$lib/components/Footer.svelte";
   import "../app.css";
 
   // Variables to track scroll position and window dimensions
@@ -33,10 +34,11 @@
   </div>
 
   <!-- HEADER/NAVBAR -->
-  <Header />
+  <Navbar />
   <!-- OUTLET FOR WHATEVER CONTENT -->
   <slot />
 </section>
 
+<Footer />
 <!-- Bind scroll position and window dimensions -->
 <svelte:window bind:scrollY={y} bind:innerHeight bind:innerWidth />

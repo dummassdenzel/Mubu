@@ -1,18 +1,7 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
-  import { validateForm } from "$lib/formValidator";
   import { onMount } from "svelte";
 
-  // LOCOMOTIVE SCROLL INITIALIZATION
   onMount(() => {});
-
-  type ErrorType = {
-    name?: string;
-    email?: string;
-    phoneNumber?: string;
-    address?: string;
-    reason?: string;
-  };
 
   let name = "";
   let email = "";
@@ -20,37 +9,6 @@
   let address = "";
   let reason = "";
   let additionalInfo = "";
-  let errors = writable<ErrorType>({});
-
-  function submitForm() {
-    const validationErrors = validateForm(
-      name,
-      email,
-      phoneNumber,
-      address,
-      reason,
-    );
-    if (Object.keys(validationErrors).length === 0) {
-      console.log("Form submitted successfully with the following data:", {
-        name,
-        email,
-        phoneNumber,
-        address,
-        reason,
-        additionalInfo,
-      });
-      // Reset form fields after successful submission
-      name = "";
-      email = "";
-      phoneNumber = "";
-      address = "";
-      reason = "";
-      additionalInfo = "";
-    } else {
-      errors.set(validationErrors);
-      console.log("Form validation failed:", validationErrors);
-    }
-  }
 </script>
 
 <section>
@@ -67,10 +25,7 @@
   </div>
 
   <!-- CONTENT -->
-  <form
-    on:submit|preventDefault={submitForm}
-    class="grid grid-cols-2 gap-x-16 max-sm:gap-x-5 p-16 max-sm:p-5"
-  >
+  <form class="grid grid-cols-2 gap-x-16 max-sm:gap-x-5 p-16 max-sm:p-5">
     <!-- COLUMN 1 (Left) -->
     <div
       class="col-start-1 row-start-1 space-y-4 grid grid-rows-[auto_auto_auto_auto_auto_1fr]"
@@ -84,9 +39,6 @@
           required
           class="w-full p-1 border bg-accent border-slate-500"
         />
-        {#if $errors.name}
-          <p class="text-red-600">{$errors.name}</p>
-        {/if}
       </div>
       <div>
         <label for="email">E-mail:</label>
@@ -97,9 +49,6 @@
           required
           class="w-full p-1 border bg-accent border-slate-500"
         />
-        {#if $errors.email}
-          <p class="text-red-600">{$errors.email}</p>
-        {/if}
       </div>
       <div>
         <label for="phoneNumber">Phone Number:</label>
@@ -110,9 +59,6 @@
           required
           class="w-full p-1 border bg-accent border-slate-500"
         />
-        {#if $errors.phoneNumber}
-          <p class="text-red-600">{$errors.phoneNumber}</p>
-        {/if}
       </div>
       <div>
         <label for="address">Address:</label>
@@ -123,9 +69,6 @@
           required
           class="w-full p-1 border bg-accent border-slate-500"
         />
-        {#if $errors.address}
-          <p class="text-red-600">{$errors.address}</p>
-        {/if}
       </div>
       <div>
         <label for="reason">Reason for Contact:</label>
@@ -136,9 +79,6 @@
           required
           class="w-full p-1 border bg-accent border-slate-500"
         />
-        {#if $errors.reason}
-          <p class="text-red-600">{$errors.reason}</p>
-        {/if}
       </div>
     </div>
 

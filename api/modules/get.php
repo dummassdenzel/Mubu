@@ -74,6 +74,13 @@ class Get extends GlobalMethods
         return $this->get_records('users', $condition);
     }
 
-
+    public function get_products($id = null)
+    {
+        $condition = null;
+        if ($id != null) {
+            $condition = "id=$id";
+        }
+        return $this->get_records('products', $condition);
+    }
 
 }

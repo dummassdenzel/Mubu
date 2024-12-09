@@ -1,247 +1,70 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import ProductCard from "$lib/ProductCard.svelte";
-  import type { ValidationErrors } from "../../lib/formValidator";
-  import { validateForm } from "../../lib/formValidator";
+  import ProductCard from "$lib/components/shop/ProductCard.svelte";
+  import ProductModal from "$lib/components/shop/ProductModal.svelte";
+  import type { Product } from "$lib/stores/products";
+  import { products } from "$lib/stores/products";
 
-  let name = "";
-  let email = "";
-  let phoneNumber = "";
-  let address = "";
   let selectedProduct: Product | null = null;
-  let quantity = 1;
-  let additionalInfo = "";
-  let checkout = false;
-  let formErrors: ValidationErrors = {};
-  let filteredProducts: Product[] = [];
-  let totalPrice = 0;
-  let checkedOutProduct: Product | null = null;
+  let activeCategory = "All";
 
-  // SAMPLE PRODUCTS
-  let products = [
-    {
-      id: 1,
-      name: " Coffee Lover Sticker",
-      price: 20,
-      image: "images/p1.png",
-      description:
-        "Gokoru Series - Coffee Lover Sticker starring Gokoru (Gordon College Girl)",
-      brand: "Gokoru Series",
-      size: "2x2in",
-      material: "Vinyl",
-      category: "Stickers",
-    },
-    {
-      id: 2,
-      name: "Gokoru Crying Sticker",
-      price: 20,
-      image: "images/p2.png",
-      description:
-        "Gokoru Series - Crying, Pity, Cute Sticker starring Gokoru (Gordon College Girl)",
-      brand: "Gokoru Series",
-      size: "2x2in",
-      material: "Vinyl",
-      category: "Stickers",
-    },
-    {
-      id: 3,
-      name: "Programmer Sticker",
-      price: 20,
-      image: "images/p3.png",
-      description:
-        "Gokoru Series - Funny Programming Meme Sticker starring Gokare (Gordon College Boy)",
-      brand: "Gokoru Series",
-      size: "2x2in",
-      material: "Vinyl",
-      category: "Stickers",
-    },
-    {
-      id: 4,
-      name: "Gokoru Bookmark",
-      price: 35,
-      image: "images/bm1.png",
-      description: "Cute Witty Bookmark starring Gokoru (Gordon College Girl)",
-      brand: "Gokoru Series",
-      size: "2x8in",
-      material: "Paper (Laminated)",
-      category: "Bookmarks",
-    },
-    {
-      id: 5,
-      name: "CAHS Tears Sticker",
-      price: 15,
-      image: "images/p4.png",
-      description: "Funny Witty CAHS-themed Sticker.",
-      brand: "Denzetsu",
-      size: "2x2in",
-      material: "Vinyl",
-      category: "Stickers",
-    },
-    {
-      id: 6,
-      name: "CAHS Stethoscope Sticker",
-      price: 8,
-      image: "images/p5.png",
-      description: "Cute Casual CAHS-themed Sticker.",
-      brand: "Denzetsu",
-      size: "2x2in",
-      material: "Vinyl",
-      category: "Stickers",
-    },
-    // {
-    //   id: 7,
-    //   name: "Cosmic Notebook",
-    //   price: 12,
-    //   image: "images/p7.jpg",
-    //   description: "A notebook with cosmic designs.",
-    //   brand: "Galactic Goods",
-    //   size: "15×21cm",
-    //   material: "Paper",
-    //   category: "Notebooks",
-    // },
-    // {
-    //   id: 8,
-    //   name: "Starry Night Lamp",
-    //   price: 25,
-    //   image: "images/p8.jpg",
-    //   description: "Illuminate your room with stars.",
-    //   brand: "Luminous",
-    //   size: "10×10×20cm",
-    //   material: "Plastic",
-    //   category: "Lamps",
-    // },
-    // {
-    //   id: 9,
-    //   name: "Aurora Poster",
-    //   price: 18,
-    //   image: "images/p9.jpg",
-    //   description: "A beautiful poster of the aurora.",
-    //   brand: "Artistic Prints",
-    //   size: "50×70cm",
-    //   material: "Paper",
-    //   category: "Posters",
-    // },
+  const categories = [
+    "All",
+    "Stickers",
+    "Bookmarks",
+    "Keychains",
+    "Posters",
+    "Cards",
   ];
 
-  // INITIALIZE LOCOMOTIVE SCROLL
-  onMount(() => {
-    filteredProducts = products;
+  onMount(async () => {
+    try {
+      await products.fetchProducts();
+    } catch (error) {
+      console.error(error);
+    }
   });
 
-  // Filter products by category
   function filterByCategory(category: string) {
-    if (category === "All") {
-      filteredProducts = products;
-    } else {
-      filteredProducts = products.filter(
-        (product) => product.category === category,
-      );
-    }
+    activeCategory = category;
+    products.setCategory(category);
   }
 
-  // Validate and submit form
-  function formCheck() {
-    formErrors = validateForm(name, email, phoneNumber, address, "", true);
-    if (Object.keys(formErrors).length === 0) {
-      closeModal();
-    } else {
-      console.error("Form validation failed", formErrors);
-    }
-  }
-
-  // Define Product interface
-  interface Product {
-    id: number;
-    name: string;
-    price: number;
-    image: string;
-    description: string;
-    brand: string;
-    size: string;
-    material: string;
-    category: string;
-  }
-
-  // Open product modal
-  function openModal(product: Product) {
+  function handleOpenModal(product: Product) {
     selectedProduct = product;
-    document.body.style.overflow = "hidden"; // Prevent body scroll
-    document.querySelector(".modal-scroll")?.scrollTo(0, 0); // Reset scroll position of modal
   }
 
-  // Close product modal
-  function closeModal() {
+  function handleCloseModal() {
     selectedProduct = null;
-    checkout = false;
   }
 
-  // Update quantity
-  function updateQuantity(change: number) {
-    quantity = Math.max(1, quantity + change);
-  }
-
-  // Update total price whenever selectedProduct or quantity changes
-  $: if (selectedProduct) {
-    totalPrice = selectedProduct.price * quantity;
-  }
-
-  // Function to go back to product input
-  function goBackToProductInput() {
-    // Ensure the product modal is open
-    if (checkedOutProduct) {
-      selectedProduct = checkedOutProduct;
-      checkedOutProduct = null;
-    }
-  }
-
-  // Function to handle checkout
-  function handleCheckout() {
-    if (selectedProduct) {
-      checkedOutProduct = { ...selectedProduct };
-      console.log("Checkout complete");
-      selectedProduct = null;
-    }
+  function handleAddToCart(event: CustomEvent<Product>) {
+    const product = event.detail;
+    // TODO: Implement add to cart functionality
+    console.log("Adding to cart:", product);
+    handleCloseModal();
   }
 </script>
 
 <!-- WHOLE SECTION -->
 <section class="flex flex-col md:flex-row">
-  <!-- SIDEBAR (desktop) NAVBAR (mobile) -->
   <aside
-    class=" md:w-64 md:h-screen w-full md:block bg-white shadow-2xl sticky top-[0]"
+    class="md:w-64 md:h-screen w-full md:block bg-white shadow-2xl sticky top-[0]"
   >
     <ul
       class="gap-4 md:gap-0 text-black p-5 text-sm md:text-xl flex md:flex-col flex-row overflow-auto justify-center md:justify-center md:mt-10"
     >
-      <button
-        class="md:border-b md:border-slate-300 md:py-3"
-        on:click={() => filterByCategory("All")}>All</button
-      >
-
-      <button
-        class="md:border-b md:border-slate-300 md:py-3"
-        on:click={() => filterByCategory("Stickers")}>Stickers</button
-      >
-
-      <button
-        class="md:border-b md:border-slate-300 md:py-3"
-        on:click={() => filterByCategory("Bookmarks")}>Bookmarks</button
-      >
-
-      <button
-        class="md:border-b md:border-slate-300 md:py-3"
-        on:click={() => filterByCategory("Keychains")}>Keychains</button
-      >
-
-      <button
-        class="md:border-b md:border-slate-300 md:py-3"
-        on:click={() => filterByCategory("Posters")}>Posters</button
-      >
-
-      <button
-        class="md:border-b md:border-slate-300 md:py-3"
-        on:click={() => filterByCategory("Cards")}>Cards</button
-      >
+      {#each categories as category}
+        <button
+          class="md:border-b md:border-slate-300 md:py-3 {activeCategory ===
+          category
+            ? 'text-red-500 font-bold'
+            : ''}"
+          on:click={() => filterByCategory(category)}
+        >
+          {category}
+        </button>
+      {/each}
     </ul>
   </aside>
 
@@ -249,268 +72,25 @@
   <div class="flex flex-1 justify-center py-16 px-12 max-sm:p-5 max-md:p-5">
     <!--  ITEMS -->
     <section class="overflow-x-auto">
-      <!-- INDIVIDUAL ITEM ITERATION -->
       <div
         class="flex flex-wrap justify-evenly gap-4 max-sm:gap-2 max-md:gap-2"
       >
-        {#each filteredProducts as product}
-          <ProductCard {product} {openModal} />
+        {#each $products as product}
+          <ProductCard {product} openModal={handleOpenModal} />
         {/each}
       </div>
 
-      <!-- MODAL -->
       {#if selectedProduct}
-        <div
-          class="fixed z-10 inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-        >
-          <!-- MODAL CONTENT -->
-          <div
-            class="bg-white rounded-lg shadow-lg w-full relative max-h-[80%] max-w-[70%] max-sm:max-w-[90%] grid grid-cols-2 max-md:overflow-hidden max-sm:overflow-auto"
-          >
-            <!-- CLOSE BUTTON -->
-            <button
-              on:click={closeModal}
-              class="absolute top-2 right-2 text-gray-600 z-10"
-              aria-label="Close modal"
-            >
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <!-- LEFT SIDE: IMAGE -->
-            <div
-              class="col-span-1 max-sm:col-span-2 w-full bg-accent overflow-hidden flex justify-center items-center"
-            >
-              <img
-                src={selectedProduct.image}
-                alt={selectedProduct.name}
-                class="max-h-[50vh] max-w-full object-contain"
-              />
-            </div>
-
-            <!-- RIGHT SIDE: DETAILS -->
-            <div class="col-span-1 max-sm:col-span-2 p-5">
-              <!-- PRODUCT INFO-->
-              {#if !checkout}
-                <section class="mt-10">
-                  <!-- NAME & BRAND -->
-                  <div class="mb-6">
-                    <h2 class="text-xl md:text-2xl font-bold text-black">
-                      {selectedProduct.name}
-                    </h2>
-                    <h3 class="text-black mb-2">
-                      {selectedProduct.brand}
-                    </h3>
-                  </div>
-                  <!-- PRICE -->
-                  <h2 class="text-red-600 text-lg md:text-3xl mb-4">
-                    ₱{totalPrice.toFixed(2)}
-                  </h2>
-                  <!-- PURCHASE -->
-                  <button
-                    class="bg-hot text-white text-2xl py-1 px-10 font-primary mb-10"
-                    on:click={() => {
-                      checkout = true;
-                    }}>Purchase</button
-                  >
-                  <!-- DETAILS -->
-                  <div class="space-y-2 text-black">
-                    <p>
-                      <strong>Size:</strong>
-                      {selectedProduct.size}
-                    </p>
-                    <p>
-                      <strong>Material:</strong>
-                      {selectedProduct.material}
-                    </p>
-                    <p>
-                      <strong>Description:</strong>
-                      {selectedProduct.description}
-                    </p>
-                  </div>
-                </section>
-              {/if}
-
-              <!-- CHECKOUT -->
-              {#if checkout}
-                <section class="relative">
-                  <!-- BACK BUTTON -->
-                  <button
-                    on:click={() => {
-                      checkout = false;
-                    }}
-                    class=" top-2 left-2 text-gray-600 z-10 mb-5"
-                    aria-label="Cancel Purchase"
-                  >
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span class="ms-2">Back</span>
-                  </button>
-                  <!-- QUANTITY -->
-                  <div class="flex justify-center">
-                    <div class="flex-col">
-                      <h1 class="text-center">Quantity:</h1>
-                      <div class="flex items-center w-full md:w-auto">
-                        <button
-                          on:click={() => updateQuantity(-1)}
-                          class="px-3 py-2 bg-hot text-white rounded-lg text-lg"
-                          >-</button
-                        >
-                        <input
-                          type="number"
-                          id="quantity"
-                          bind:value={quantity}
-                          min="1"
-                          class="w-16 text-center mx-3 border-2 border-gray-400 rounded-lg text-xl font-bold text-black"
-                        />
-                        <button
-                          on:click={() => updateQuantity(1)}
-                          class="px-3 py-2 bg-hot text-white rounded-lg text-lg"
-                          >+</button
-                        >
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- FORM -->
-                  <form on:submit|preventDefault={formCheck}>
-                    <!-- FORM FIELDS -->
-                    <div class="mb-7">
-                      <!-- BUYER NAME -->
-                      <div>
-                        <label for="name">Name:</label>
-                        <input
-                          type="text"
-                          id="name"
-                          bind:value={name}
-                          required
-                          class="w-full px-2 border rounded text-black"
-                        />
-                        {#if formErrors.name}<p class="text-red-500">
-                            {formErrors.name}
-                          </p>{/if}
-                      </div>
-                      <!-- BUYER EMAIL -->
-                      <div>
-                        <label for="email">E-mail:</label>
-                        <input
-                          type="email"
-                          id="email"
-                          bind:value={email}
-                          required
-                          class="w-full px-2 border rounded text-black"
-                        />
-                        {#if formErrors.email}<p class="text-red-500">
-                            {formErrors.email}
-                          </p>{/if}
-                      </div>
-                      <!-- BUYER PHONE NUMBER -->
-                      <div>
-                        <label for="phoneNumber">Phone Number:</label>
-                        <input
-                          type="tel"
-                          id="phoneNumber"
-                          bind:value={phoneNumber}
-                          required
-                          class="w-full px-2 border rounded text-black"
-                        />
-                        {#if formErrors.phoneNumber}<p class="text-red-500">
-                            {formErrors.phoneNumber}
-                          </p>{/if}
-                      </div>
-                      <!-- BUYER ADDRESS -->
-                      <div>
-                        <label for="address">Address:</label>
-                        <input
-                          type="text"
-                          id="address"
-                          bind:value={address}
-                          required
-                          class="w-full px-2 border rounded text-black"
-                        />
-                        {#if formErrors.address}<p class="text-red-500">
-                            {formErrors.address}
-                          </p>{/if}
-                      </div>
-                    </div>
-
-                    <!-- CHECKOUT -->
-                    <div class="flex justify-center">
-                      <button
-                        class="bg-hot text-white px-6 py-2 text-lg"
-                        type="submit"
-                        >Checkout
-                        <i class="ms-1 fa-solid fa-arrow-right"></i>
-                      </button>
-                    </div>
-                  </form>
-                </section>
-              {/if}
-            </div>
-          </div>
-        </div>
-      {/if}
-
-      {#if checkedOutProduct}
-        <div
-          class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-        >
-          <div
-            class="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full relative"
-          >
-            <h2 class="text-2xl font-bold mb-4 text-black">Order Summary</h2>
-            <p class="text-black mb-2">
-              <strong>Product:</strong>
-              {checkedOutProduct?.name}
-            </p>
-            <p class="text-black mb-2">
-              <strong>Quantity:</strong>
-              {quantity}
-            </p>
-            <p class="text-black mb-2">
-              <strong>Total Price:</strong> ₱{totalPrice.toFixed(2)}
-            </p>
-            <h3 class="text-xl font-bold mt-4 mb-2 text-black">
-              User Information
-            </h3>
-            <p class="text-black mb-2"><strong>Name:</strong> {name}</p>
-            <p class="text-black mb-2"><strong>Email:</strong> {email}</p>
-            <p class="text-black mb-2">
-              <strong>Phone Number:</strong>
-              {phoneNumber}
-            </p>
-            <p class="text-black mb-2"><strong>Address:</strong> {address}</p>
-            <p class="text-black mb-2">
-              <strong>Additional Info:</strong>
-              {additionalInfo}
-            </p>
-            <div class="flex justify-between mt-4">
-              <button
-                on:click={goBackToProductInput}
-                class="bg-gray-600 text-white px-4 py-2 rounded-full"
-                >Back</button
-              >
-              <button
-                on:click={handleCheckout}
-                class="bg-blue-600 text-white px-4 py-2 rounded-full"
-                >Checkout</button
-              >
-            </div>
-            <button
-              on:click={() => {
-                checkedOutProduct = null;
-              }}
-              class="absolute top-2 right-2 text-gray-600"
-              aria-label="Close summary"
-            >
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
+        <ProductModal
+          product={selectedProduct}
+          isOpen={!!selectedProduct}
+          on:close={handleCloseModal}
+          on:addToCart={handleAddToCart}
+        />
       {/if}
     </section>
   </div>
 </section>
 
 <style>
-  /* button:hover {
-  } */
 </style>
