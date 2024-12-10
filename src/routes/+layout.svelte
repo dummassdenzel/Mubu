@@ -18,7 +18,7 @@
   class="container relative flex flex-col max-w-[1400px] mx-auto w-full text-sm sm:text-base min-h-screen z-[2]"
 >
   <!-- SCROLL TO TOP BUTTON -->
-  <div
+  <!-- <div
     class={"fixed bottom-0 w-full right-0 duration-200 flex p-10 z-[10] " +
       (y > 0
         ? " opacity-full pointer-events-auto"
@@ -43,11 +43,9 @@
         ><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg
       >
     </button>
-  </div>
+  </div> -->
 
-  <!-- HEADER/NAVBAR -->
   <Navbar />
-  <!-- OUTLET FOR WHATEVER CONTENT -->
   <slot />
 </section>
 

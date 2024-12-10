@@ -5,10 +5,12 @@
   import type { Product } from "$lib/stores/products";
   import { products } from "$lib/stores/products";
   import { cart } from "$lib/stores/cart";
+  import CartModal from "$lib/components/shop/CartModal.svelte";
 
   let selectedProduct: Product | null = null;
   let activeCategory = "All";
   let mounted = false;
+  let isCartOpen = false;
 
   const categories = [
     "All",
@@ -63,6 +65,10 @@
     });
     handleCloseModal();
   }
+
+  function toggleCart() {
+    isCartOpen = !isCartOpen;
+  }
 </script>
 
 <!-- WHOLE SECTION -->
@@ -72,7 +78,7 @@
       class="md:w-64 z-[10] md:h-screen w-full md:block bg-white shadow-2xl sticky top-[0] flex flex-col justify-between"
     >
       <ul
-        class="gap-4 md:gap-0 text-black p-5 text-sm md:text-xl flex md:flex-col flex-row overflow-auto justify-center md:justify-center md:mt-7"
+        class="gap-4 md:gap-0 text-black p-5 text-sm md:text-base flex md:flex-col flex-row overflow-auto justify-center md:justify-center md:mt-7"
       >
         {#each categories as category}
           <button
@@ -86,24 +92,6 @@
           </button>
         {/each}
       </ul>
-
-      <!-- Cart Link - Hidden on mobile -->
-      <a
-        href="/cart"
-        class="hidden md:flex mt-10 items-center justify-evenly mx-5 p-4 bg-hot text-white hover:bg-red-600 transition-colors"
-      >
-        <span class="flex items-center gap-2">
-          <i class="fa-solid fa-shopping-cart"></i>
-          Your Cart
-        </span>
-        {#if cartItemCount > 0}
-          <span
-            class="bg-white text-hot rounded-full w-6 h-6 flex items-center justify-center text-sm"
-          >
-            {cartItemCount}
-          </span>
-        {/if}
-      </a>
     </aside>
 
     <!-- CONTENT -->
@@ -128,13 +116,30 @@
       </section>
     </div>
 
-    <!-- Add floating cart button for mobile -->
-    <a
-      href="/cart"
-      class="md:hidden fixed bottom-6 left-6 z-50 w-14 h-14 bg-hot text-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-colors"
-      aria-label="View Cart"
+    <!-- Cart Button (Fixed Position) -->
+    <button
+      on:click={toggleCart}
+      class="fixed bottom-6 right-6 z-40 w-12 h-12 bg-hot text-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-colors"
+      aria-label="Open Cart"
     >
-      <i class="fa-solid fa-shopping-cart text-xl"></i>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-shopping-cart"
+      >
+        <circle cx="8" cy="21" r="1" />
+        <circle cx="19" cy="21" r="1" />
+        <path
+          d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+        />
+      </svg>
       {#if cartItemCount > 0}
         <span
           class="absolute -top-2 -right-2 bg-white text-hot rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold"
@@ -142,7 +147,10 @@
           {cartItemCount}
         </span>
       {/if}
-    </a>
+    </button>
+
+    <!-- Cart Modal -->
+    <CartModal isOpen={isCartOpen} on:close={() => (isCartOpen = false)} />
   {/if}
 </section>
 
