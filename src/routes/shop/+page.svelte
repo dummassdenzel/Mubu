@@ -98,7 +98,7 @@
     <div class="flex flex-1 justify-center py-16 px-12 max-sm:p-5 max-md:p-5">
       <section class="overflow-x-auto">
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
+          class="flex flex-wrap justify-around gap-4 max-sm:gap-2 max-md:gap-2"
         >
           {#each $products as product}
             <ProductCard {product} openModal={handleOpenModal} />

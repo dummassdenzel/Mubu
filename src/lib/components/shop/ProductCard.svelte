@@ -22,7 +22,7 @@
         }
     }}
     tabindex="0"
-    class="group p-4 flex flex-col gap-4 rounded-lg border border-transparent hover:border-black cursor-pointer transition-all duration-200 w-[300px]"
+    class="group p-4 flex flex-col gap-4 rounded-lg border border-transparent hover:border-black cursor-pointer transition-all duration-200 w-[280px] max-sm:w-[160px] max-lg:w-[200px]"
     aria-label={`View details for ${product.name}`}
 >
     <!-- Image Section with loading state -->
@@ -51,9 +51,12 @@
     <!-- Product Details -->
     <div class="mt-2 space-y-2 flex-1">
         <p class="text-base text-gray-600">{product.series}</p>
-        <h3 class="font-medium text-lg font-afacad line-clamp-2">
+        <h3 class="font-medium text-lg font-afacad line-clamp-2 h-[3em]">
             {product.name}
         </h3>
+        <!-- <h3 class="font-medium text-lg font-afacad line-clamp-2 h-[3em]">
+            {product.series}
+        </h3> -->
         <p class="text-base font-semibold">
             ₱{Number(product.price).toLocaleString()}.00
         </p>
