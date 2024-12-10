@@ -69,7 +69,7 @@
                         {#each $cart as item}
                             <div class="py-4 flex items-center gap-4">
                                 <img
-                                    src={item.imageUrl}
+                                    src={item.image_url}
                                     alt={item.name}
                                     class="w-20 h-20 object-contain bg-accent rounded"
                                 />

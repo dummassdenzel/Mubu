@@ -61,7 +61,7 @@
       id: product.id,
       name: product.name,
       price: product.price,
-      imageUrl: product.imageUrl,
+      image_url: product.image_url,
     });
     handleCloseModal();
   }

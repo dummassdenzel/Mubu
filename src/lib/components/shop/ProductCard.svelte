@@ -38,7 +38,7 @@
             </div>
         {/if}
         <img
-            src={product.imageUrl}
+            src={product.image_url}
             alt={product.name}
             loading="lazy"
             on:load={handleImageLoad}

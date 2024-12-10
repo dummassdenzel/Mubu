@@ -205,6 +205,60 @@ class Post extends GlobalMethods
         }
     }
 
+    public function uploadProductImage($data, $files)
+    {
+        try {
+            if (!isset($files['product_image'])) {
+                return $this->sendPayload(null, "failed", "No file uploaded", 400);
+            }
+
+            $file = $files['product_image'];
+            $productId = $data['product_id'];
+
+            // Validate file type
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!in_array($file['type'], $allowedTypes)) {
+                return $this->sendPayload(null, "failed", "Invalid file type. Only JPEG, PNG and WEBP are allowed", 400);
+            }
+
+            // Validate file size (2MB limit for product images)
+            $maxSize = 2 * 1024 * 1024;
+            if ($file['size'] > $maxSize) {
+                return $this->sendPayload(null, "failed", "File is too large. Maximum size is 2MB", 400);
+            }
+
+            // Create uploads directory if it doesn't exist
+            $uploadDir = __DIR__ . '/../uploads/products/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = 'product_' . $productId . '_' . uniqid() . '.' . $extension;
+            $filepath = $uploadDir . $filename;
+
+            // Move uploaded file
+            if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+                return $this->sendPayload(null, "failed", "Failed to save file", 500);
+            }
+
+            // Update product image URL in database
+            $sql = "UPDATE products SET image_url = ? WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$filename, $productId]);
+
+            return $this->sendPayload(
+                ['file_path' => $filename],
+                "success",
+                "Product image uploaded successfully",
+                200
+            );
+        } catch (PDOException $e) {
+            return $this->sendPayload(null, "failed", $e->getMessage(), 400);
+        }
+    }
+
 }
 
 

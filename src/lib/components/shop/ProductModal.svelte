@@ -18,7 +18,7 @@
             id: product.id,
             name: product.name,
             price: product.price,
-            imageUrl: product.imageUrl,
+            image_url: product.image_url,
         });
 
         Swal.fire({
@@ -104,7 +104,7 @@
                     class="col-span-1 max-sm:col-span-2 w-full bg-accent overflow-hidden flex justify-center items-center"
                 >
                     <img
-                        src={product.imageUrl}
+                        src={product.image_url}
                         alt={product.name}
                         class="max-h-[50vh] max-w-full object-contain"
                         loading="lazy"

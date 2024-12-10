@@ -106,7 +106,7 @@
                             {#each currentOrder.order_items as item}
                                 <div class="py-4 flex items-center gap-4">
                                     <img
-                                        src={item.product_image ||
+                                        src={item.image_url ||
                                             "/placeholder.png"}
                                         alt={item.product_name}
                                         class="w-20 h-20 object-contain bg-accent rounded"

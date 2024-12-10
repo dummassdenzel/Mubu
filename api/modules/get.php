@@ -76,17 +76,33 @@ class Get extends GlobalMethods
 
     public function get_products($id = null)
     {
-        $condition = null;
-        if ($id != null) {
-            $condition = "id=$id";
+        try {
+            $baseUrl = "http://localhost/mubu/api"; // Adjust this to your API base URL
+            $sql = "SELECT p.*, 
+                    CONCAT('$baseUrl/uploads/products/', p.image_url) as image_url 
+                    FROM products p";
+
+            if ($id != null) {
+                $sql .= " WHERE p.id = ?";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$id]);
+            } else {
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute();
+            }
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->sendPayload($result, "success", "Successfully retrieved products", 200);
+        } catch (PDOException $e) {
+            return $this->sendPayload(null, "failed", $e->getMessage(), 400);
         }
-        return $this->get_records('products', $condition);
     }
 
     public function get_orders($id = null)
     {
         try {
             if ($id !== null) {
+                $baseUrl = "http://localhost/mubu/api"; // Same base URL as in get_products
                 // Get specific order with its items
                 $sql = "SELECT o.*, 
                               u.first_name as customer_first_name,
@@ -104,10 +120,11 @@ class Get extends GlobalMethods
                 }
 
                 // Get order items
-                $sqlItems = "SELECT oi.*, p.name as product_name, p.image_url as product_image
-                            FROM orderitems oi
-                            LEFT JOIN products p ON oi.product_id = p.id
-                            WHERE oi.order_id = ?";
+                $sqlItems = "SELECT oi.*, p.name as product_name, 
+                          CONCAT('$baseUrl/uploads/products/', p.image_url) as image_url
+                           FROM orderitems oi
+                           LEFT JOIN products p ON oi.product_id = p.id
+                           WHERE oi.order_id = ?";
 
                 $stmtItems = $this->pdo->prepare($sqlItems);
                 $stmtItems->execute([$id]);

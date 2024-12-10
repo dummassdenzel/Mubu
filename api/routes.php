@@ -84,7 +84,26 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     echo json_encode($get->get_orders());
                 }
                 break;
+            case 'uploads':
+                if (count($request) > 2 && $request[1] === 'products') {
+                    $filename = $request[2];
+                    $filepath = "uploads/products/" . $filename;
 
+                    if (file_exists($filepath)) {
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                        $mime_type = finfo_file($finfo, $filepath);
+                        finfo_close($finfo);
+
+                        header('Content-Type: ' . $mime_type);
+                        header('Content-Disposition: inline; filename="' . $filename . '"');
+                        readfile($filepath);
+                        exit;
+                    } else {
+                        http_response_code(404);
+                        echo "File not found";
+                    }
+                }
+                break;
 
             default:
                 // RESPONSE FOR UNSUPPORTED REQUESTS
@@ -130,6 +149,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
             case 'payment-proof':
                 echo json_encode($post->uploadPaymentProof($_POST, $_FILES));
+                break;
+
+            case 'product-image':
+                echo json_encode($post->uploadProductImage($_POST, $_FILES));
                 break;
 
 
