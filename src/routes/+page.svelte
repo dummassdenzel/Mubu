@@ -9,14 +9,19 @@
     <div
         class="w-[50%] max-sm:w-[100%] max-md:w-[100%] max-sm:text-center max-md:text-center"
     >
-        <h1 class="text-5xl font-bold mb-4">
+        <h1 class="max-sm:text-5xl text-6xl font-bold mb-4">
             Witty Stickers, Charming Bookmarks, and More!
         </h1>
 
-        <p>
-            Explore our handcrafted digital merchandise, designed to bring
-            creativity and coziness to your everyday life.
+        <p class="max-sm:text-lg">
+            Explore my digitally illustrated merchandise, designed to bring
+            creativity and charm to your everyday life.
         </p>
+
+        <p class="mt-12 text-sm">
+            Illustrations made with amusement and fun in mind.
+        </p>
+        <p class="text-sm text-hot">Denzel Manz S. Perez</p>
     </div>
 
     <!-- DIV FOR CALL TO ACTION BUTTONS -->
@@ -60,7 +65,7 @@
     <div
         class="max-sm:hidden max-md:hidden absolute -right-20 top-1/2 transform -translate-y-1/2 w-[55%]"
     >
-        <img src="assets/mascot.png" alt="" />
+        <img src="assets/gokoru.png" alt="" />
     </div>
 
     <!-- DIV FOR BACKGROUND SQUARE -->
@@ -73,8 +78,8 @@
         position: absolute;
         bottom: -18rem;
         right: -18rem;
-        width: 130vh;
-        height: 130vh;
+        width: 120vh;
+        height: 120vh;
         background-color: #fff8a7;
         border-radius: 250px;
         transform: rotate(70deg);

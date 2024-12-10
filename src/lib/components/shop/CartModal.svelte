@@ -58,25 +58,60 @@
             <div class="modal-content h-full flex flex-col">
                 <!-- Header -->
                 <div class="p-4 border-b flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Your Cart</h2>
+                    <h2 class="text-xl font-bold">Your Cart:</h2>
                     <button
                         on:click={() => dispatch("close")}
                         class="text-gray-500 hover:text-gray-700"
                         aria-label="Close cart"
                     >
-                        <i class="fa-solid fa-xmark text-xl"></i>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            class="lucide lucide-x"
+                            ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
+                        >
                     </button>
                 </div>
 
                 <!-- Cart Items -->
                 <div class="flex-1 overflow-y-auto p-4">
                     {#if $cart.length === 0}
-                        <div class="text-center py-8">
-                            <p class="text-gray-500 mb-4">Your cart is empty</p>
+                        <div
+                            class="text-center py-8 flex flex-col items-center"
+                        >
+                            <img
+                                class="w-1/2 opacity-50"
+                                src="assets/empty1.png"
+                                alt="empty"
+                            />
+                            <p class="text-gray-500 mb-4">
+                                Your cart is empty.
+                            </p>
                             <button
                                 on:click={handleContinueShopping}
-                                class="text-hot hover:text-red-600"
-                            >
+                                class="flex items-center gap-2 mt-5 text-white bg-hot px-3 py-2 rounded-lg hover:text-blue-400"
+                                ><svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="lucide lucide-arrow-left"
+                                    ><path d="m12 19-7-7 7-7" /><path
+                                        d="M19 12H5"
+                                    /></svg
+                                >
                                 Continue Shopping
                             </button>
                         </div>
