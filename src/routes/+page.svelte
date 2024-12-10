@@ -13,15 +13,15 @@
             Witty Stickers, Charming Bookmarks, and More!
         </h1>
 
-        <p class="max-sm:text-lg">
+        <p class="max-sm:text-lg text-sm font-primary">
             Explore my digitally illustrated merchandise, designed to bring
             creativity and charm to your everyday life.
         </p>
 
-        <p class="mt-12 text-sm">
+        <p class="mt-16 text-sm font-primary">
             Illustrations made with amusement and fun in mind.
         </p>
-        <p class="text-sm text-hot">Denzel Manz S. Perez</p>
+        <p class="text-sm text-hot font-primary">by Denzel Manz S. Perez</p>
     </div>
 
     <!-- DIV FOR CALL TO ACTION BUTTONS -->

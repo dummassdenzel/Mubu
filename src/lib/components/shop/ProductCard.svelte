@@ -22,12 +22,12 @@
         }
     }}
     tabindex="0"
-    class="group p-4 sm:p-6 md:p-4 flex flex-col gap-4 rounded-lg border border-transparent hover:border-black cursor-pointer transition-all duration-200"
+    class="group p-4 flex flex-col gap-4 rounded-lg border border-transparent hover:border-black cursor-pointer transition-all duration-200 w-[300px]"
     aria-label={`View details for ${product.name}`}
 >
     <!-- Image Section with loading state -->
     <div
-        class="bg-accent h-[40vh] w-[35vh] max-sm:h-[30vh] max-sm:w-[25vh] px-4 overflow-hidden relative"
+        class="bg-accent aspect-square w-full flex items-center justify-center overflow-hidden relative"
     >
         {#if !imageLoaded}
             <div
@@ -42,18 +42,16 @@
             alt={product.name}
             loading="lazy"
             on:load={handleImageLoad}
-            class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-200 {!imageLoaded
+            class="max-w-[80%] max-h-[80%] object-contain transform group-hover:scale-105 transition-transform duration-200 {!imageLoaded
                 ? 'opacity-0'
                 : 'opacity-100'}"
         />
     </div>
 
     <!-- Product Details -->
-    <div class="mt-2 space-y-2">
+    <div class="mt-2 space-y-2 flex-1">
         <p class="text-base text-gray-600">{product.series}</p>
-        <h3
-            class="font-medium text-xl sm:text-2xl md:text-sm font-afacad line-clamp-2"
-        >
+        <h3 class="font-medium text-lg font-afacad line-clamp-2">
             {product.name}
         </h3>
         <p class="text-base font-semibold">
