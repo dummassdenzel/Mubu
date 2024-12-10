@@ -3,6 +3,7 @@
     import { order } from "$lib/stores/order";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
+    import Swal from "sweetalert2";
 
     const orderId = Number($page.params.orderId);
 
@@ -10,7 +11,6 @@
     let paymentFile: File | null = null;
     let loading = false;
     let error = "";
-    let success = "";
 
     onMount(async () => {
         try {
@@ -24,7 +24,18 @@
     function handleFileChange(event: Event) {
         const input = event.target as HTMLInputElement;
         if (input.files && input.files[0]) {
-            paymentFile = input.files[0];
+            const file = input.files[0];
+            const maxSize = 7 * 1024 * 1024; // 7MB in bytes
+
+            if (file.size > maxSize) {
+                error = "File is too large. Maximum size is 7MB";
+                input.value = ""; // Clear the input
+                paymentFile = null;
+                return;
+            }
+
+            paymentFile = file;
+            error = ""; // Clear any previous error
         }
     }
 
@@ -40,11 +51,15 @@
 
             await order.uploadPaymentProof(orderId, paymentFile);
 
-            success =
-                "Payment proof uploaded successfully! We'll process your order soon.";
-            setTimeout(() => {
-                goto("/shop");
-            }, 3000);
+            Swal.fire({
+                title: "Success!",
+                text: "Payment proof uploaded successfully! We'll process your order soon.",
+                icon: "success",
+                confirmButtonText: "Alright!",
+                confirmButtonColor: "#BF3D3D",
+            });
+
+            goto("/shop");
         } catch (err) {
             error =
                 err instanceof Error
@@ -129,7 +144,9 @@
                             for="payment-proof"
                             class="block text-sm font-medium text-gray-700 mb-2"
                         >
-                            Upload Screenshot/Photo of Payment:
+                            Upload Screenshot/Photo of Payment: <span
+                                class="text-gray-500">(Max 7MB)</span
+                            >
                         </label>
                         <input
                             type="file"
@@ -148,10 +165,6 @@
 
                     {#if error}
                         <p class="text-red-500 text-sm">{error}</p>
-                    {/if}
-
-                    {#if success}
-                        <p class="text-green-500 text-sm">{success}</p>
                     {/if}
 
                     <button

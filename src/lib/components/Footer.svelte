@@ -1,4 +1,4 @@
-<footer class="bg-gray-800 text-white py-8">
+<footer class="bg-black text-white py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- ABOUT-->
@@ -16,7 +16,7 @@
                 <ul class="space-y-2">
                     <li>
                         <a href="/shop" class="text-gray-300 hover:text-white"
-                            >Products</a
+                            >Shop</a
                         >
                     </li>
                     <li>
@@ -24,12 +24,12 @@
                             >Home</a
                         >
                     </li>
-                    <li>
+                    <!-- <li>
                         <a
                             href="/contact"
                             class="text-gray-300 hover:text-white">Contacts</a
                         >
-                    </li>
+                    </li> -->
                 </ul>
             </div>
 

@@ -162,6 +162,12 @@ class Post extends GlobalMethods
                 return $this->sendPayload(null, "failed", "Invalid file type. Only JPEG, PNG and GIF are allowed", 400);
             }
 
+            // Validate file size (5MB limit)
+            $maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if ($file['size'] > $maxSize) {
+                return $this->sendPayload(null, "failed", "File is too large. Maximum size is 5MB", 400);
+            }
+
             // Create uploads directory if it doesn't exist
             $uploadDir = __DIR__ . '/../uploads/payments/';
             if (!file_exists($uploadDir)) {

@@ -34,6 +34,11 @@
         dispatch("close");
         goto("/checkout");
     }
+
+    async function handleContinueShopping() {
+        dispatch("close");
+        await goto("/shop");
+    }
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
@@ -69,7 +74,7 @@
                         <div class="text-center py-8">
                             <p class="text-gray-500 mb-4">Your cart is empty</p>
                             <button
-                                on:click={() => dispatch("close")}
+                                on:click={handleContinueShopping}
                                 class="text-hot hover:text-red-600"
                             >
                                 Continue Shopping

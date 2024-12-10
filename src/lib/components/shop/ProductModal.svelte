@@ -3,6 +3,7 @@
     import { cart } from "$lib/stores/cart";
     import { fade } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
+    import Swal from "sweetalert2";
 
     const dispatch = createEventDispatcher<{
         close: void;
@@ -20,8 +21,22 @@
             imageUrl: product.imageUrl,
         });
 
-        // NOTE TO SELF: ADD TOAST NOTIFICATION HERE
-        console.log("Added to cart!");
+        Swal.fire({
+            toast: true,
+            position: "bottom-start",
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            background: "white",
+            color: "black",
+            icon: "success",
+            iconColor: "#10B981",
+            title: `${product.name} added to cart!`,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            },
+        });
 
         dispatch("close");
     }

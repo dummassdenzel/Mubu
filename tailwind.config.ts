@@ -15,7 +15,7 @@ export default {
         karla: ['"Karla"', "sans-serif"],
         macondo: ['"Macondo"', "sans-serif "],
         concert: ['"Concert One"', "sans-serif"],
-        secondary: ['"Montserrat"', "sans-serif"],
+        primary: ['"Montserrat"', "sans-serif"],
       },
     },
   },
