@@ -58,7 +58,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
         switch ($request[0]) {
             case 'users':
                 // ENDPOINT PROTECTION
-                $user = $auth->authenticateRequest();
+                // $user = $auth->authenticateRequest();
                 if (count($request) > 1) {
                     echo json_encode($get->get_users($request[1]));
                 } else {
@@ -72,6 +72,16 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     echo json_encode($get->get_products($request[1]));
                 } else {
                     echo json_encode($get->get_products());
+                }
+                break;
+
+            case 'orders':
+                if (count($request) > 1) {
+                    // Get specific order by ID
+                    echo json_encode($get->get_orders($request[1]));
+                } else {
+                    // Get all orders
+                    echo json_encode($get->get_orders());
                 }
                 break;
 
@@ -112,6 +122,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
             case 'login':
                 echo json_encode($post->userLogin($data));
+                break;
+
+            case 'orders':
+                echo json_encode($post->createOrder($data));
+                break;
+
+            case 'payment-proof':
+                echo json_encode($post->uploadPaymentProof($_POST, $_FILES));
                 break;
 
 

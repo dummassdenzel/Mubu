@@ -72,6 +72,132 @@ class Post extends GlobalMethods
         }
     }
 
+    public function createOrder($data)
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            // Insert the main order
+            $sql = "INSERT INTO orders (
+                customer_name, 
+                customer_email, 
+                customer_phone, 
+                shipping_address, 
+                total_amount
+            ) VALUES (?, ?, ?, ?, ?)";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                $data->customer_name,
+                $data->customer_email,
+                $data->customer_phone,
+                $data->shipping_address,
+                $data->total_amount
+            ]);
+
+            $orderId = $this->pdo->lastInsertId();
+
+            // Insert order items
+            $sqlItems = "INSERT INTO orderitems (
+                order_id,
+                product_id,
+                quantity,
+                price
+            ) VALUES (?, ?, ?, ?)";
+
+            $stmtItems = $this->pdo->prepare($sqlItems);
+
+            foreach ($data->order_items as $item) {
+                $stmtItems->execute([
+                    $orderId,
+                    $item->product_id,
+                    $item->quantity,
+                    $item->price
+                ]);
+            }
+
+            $this->pdo->commit();
+
+            // Fetch the created order with its items
+            $order = $this->getOrderWithItems($orderId);
+
+            return $this->sendPayload($order, "success", "Order created successfully", 200);
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            return $this->sendPayload(null, "failed", $e->getMessage(), 400);
+        }
+    }
+
+    private function getOrderWithItems($orderId)
+    {
+        // Get order details
+        $sql = "SELECT * FROM orders WHERE id = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$orderId]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Get order items
+        $sqlItems = "SELECT * FROM orderitems WHERE order_id = ?";
+        $stmtItems = $this->pdo->prepare($sqlItems);
+        $stmtItems->execute([$orderId]);
+        $orderItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+
+        $order['order_items'] = $orderItems;
+        return $order;
+    }
+
+    public function uploadPaymentProof($data, $files)
+    {
+        try {
+            if (!isset($files['payment_proof'])) {
+                return $this->sendPayload(null, "failed", "No file uploaded", 400);
+            }
+
+            $file = $files['payment_proof'];
+            $orderId = $data['order_id'];
+
+            // Validate file type
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!in_array($file['type'], $allowedTypes)) {
+                return $this->sendPayload(null, "failed", "Invalid file type. Only JPEG, PNG and GIF are allowed", 400);
+            }
+
+            // Create uploads directory if it doesn't exist
+            $uploadDir = __DIR__ . '/../uploads/payments/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            // Generate unique filename
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . $extension;
+            $filepath = $uploadDir . $filename;
+
+            // Move uploaded file
+            if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+                return $this->sendPayload(null, "failed", "Failed to save file", 500);
+            }
+
+            // Save payment proof record in database
+            $sql = "INSERT INTO paymentproofs (order_id, proof_image_url, uploaded_at) VALUES (?, ?, NOW())";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$orderId, $filename]);
+
+            // Update order status
+            $sqlUpdate = "UPDATE orders SET order_status = 'PENDING_VERIFICATION' WHERE id = ?";
+            $stmtUpdate = $this->pdo->prepare($sqlUpdate);
+            $stmtUpdate->execute([$orderId]);
+
+            return $this->sendPayload(
+                ['file_path' => $filename],
+                "success",
+                "Payment proof uploaded successfully",
+                200
+            );
+        } catch (PDOException $e) {
+            return $this->sendPayload(null, "failed", $e->getMessage(), 400);
+        }
+    }
 
 }
 

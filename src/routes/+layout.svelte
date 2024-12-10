@@ -18,7 +18,7 @@
   class="container relative flex flex-col max-w-[1400px] mx-auto w-full text-sm sm:text-base min-h-screen z-[2]"
 >
   <!-- SCROLL TO TOP BUTTON -->
-  <!-- <div
+  <div
     class={"fixed bottom-0 w-full right-0 duration-200 flex p-10 z-[10] " +
       (y > 0
         ? " opacity-full pointer-events-auto"
@@ -26,7 +26,7 @@
   >
     <button
       on:click={goTop}
-      class="ml-auto rounded-full bg-primary text-black p-2 hover:bg-black hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
+      class="ml-auto rounded-full bg-black text-white p-2 hover:bg-hot hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
       aria-label="Scroll to top"
     >
       <svg
@@ -43,7 +43,7 @@
         ><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg
       >
     </button>
-  </div> -->
+  </div>
 
   <Navbar />
   <slot />

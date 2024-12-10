@@ -2,6 +2,7 @@
     import { cart } from "$lib/stores/cart";
     import { fade } from "svelte/transition";
     import { createEventDispatcher } from "svelte";
+    import { goto } from "$app/navigation";
 
     const dispatch = createEventDispatcher<{
         close: void;
@@ -27,6 +28,11 @@
             return;
         }
         dispatch("close");
+    }
+
+    function handleCheckout() {
+        dispatch("close");
+        goto("/checkout");
     }
 </script>
 
@@ -143,12 +149,12 @@
                             <span>Total:</span>
                             <span>₱{total.toFixed(2)}</span>
                         </div>
-                        <a
-                            href="/checkout"
+                        <button
+                            on:click={handleCheckout}
                             class="block w-full bg-hot text-white text-center py-3 rounded-lg hover:bg-red-600 transition-colors"
                         >
                             Proceed to Checkout
-                        </a>
+                        </button>
                     </div>
                 {/if}
             </div>

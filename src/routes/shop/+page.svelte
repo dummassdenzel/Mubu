@@ -22,7 +22,7 @@
   ];
 
   // Get total items in cart
-  $: cartItemCount = $cart.reduce((sum, item) => sum + item.quantity, 0);
+  // $: cartItemCount = $cart.reduce((sum, item) => sum + item.quantity, 0);
 
   onMount(async () => {
     try {
@@ -117,7 +117,7 @@
     </div>
 
     <!-- Cart Button (Fixed Position) -->
-    <button
+    <!-- <button
       on:click={toggleCart}
       class="fixed bottom-6 right-6 z-40 w-12 h-12 bg-hot text-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-colors"
       aria-label="Open Cart"
@@ -147,7 +147,7 @@
           {cartItemCount}
         </span>
       {/if}
-    </button>
+    </button> -->
 
     <!-- Cart Modal -->
     <CartModal isOpen={isCartOpen} on:close={() => (isCartOpen = false)} />

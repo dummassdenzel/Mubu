@@ -83,4 +83,60 @@ class Get extends GlobalMethods
         return $this->get_records('products', $condition);
     }
 
+    public function get_orders($id = null)
+    {
+        try {
+            if ($id !== null) {
+                // Get specific order with its items
+                $sql = "SELECT o.*, 
+                              u.first_name as customer_first_name,
+                              u.last_name as customer_last_name
+                       FROM orders o
+                       LEFT JOIN users u ON o.customer_email = u.email
+                       WHERE o.id = ?";
+
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$id]);
+                $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$order) {
+                    return $this->sendPayload(null, "failed", "Order not found", 404);
+                }
+
+                // Get order items
+                $sqlItems = "SELECT oi.*, p.name as product_name, p.image_url as product_image
+                            FROM orderitems oi
+                            LEFT JOIN products p ON oi.product_id = p.id
+                            WHERE oi.order_id = ?";
+
+                $stmtItems = $this->pdo->prepare($sqlItems);
+                $stmtItems->execute([$id]);
+                $orderItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+
+                $order['order_items'] = $orderItems;
+
+                return $this->sendPayload($order, "success", "Successfully retrieved order", 200);
+            } else {
+                // Get all orders with basic information
+                $sql = "SELECT o.*, 
+                              u.first_name as customer_first_name,
+                              u.last_name as customer_last_name,
+                              COUNT(oi.id) as total_items
+                       FROM orders o
+                       LEFT JOIN users u ON o.customer_email = u.email
+                       LEFT JOIN orderitems oi ON o.id = oi.order_id
+                       GROUP BY o.id
+                       ORDER BY o.created_at DESC";
+
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute();
+                $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                return $this->sendPayload($orders, "success", "Successfully retrieved orders", 200);
+            }
+        } catch (PDOException $e) {
+            return $this->sendPayload(null, "failed", $e->getMessage(), 400);
+        }
+    }
+
 }

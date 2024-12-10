@@ -1,5 +1,16 @@
-<script>
+<script lang="ts">
+  import { cart } from "$lib/stores/cart";
+  import CartModal from "$lib/components/shop/CartModal.svelte";
+
   let isDropdownOpen = false;
+  let isCartOpen = false;
+
+  // Get total items in cart
+  $: cartItemCount = $cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  function toggleCart() {
+    isCartOpen = !isCartOpen;
+  }
 </script>
 
 <header
@@ -13,19 +24,47 @@
   <!-- MENU FOR LARGE SCREENS -->
   <div class="sm:flex items-center gap-10 hidden">
     <a href="/" class="duration-200 hover:text-blue-400">
-      <p class="font-macondo">Home</p>
+      <p class="font-secondary text=lg">Home</p>
     </a>
 
     <a href="/shop" class="duration-200 hover:text-blue-400">
-      <p class="font-macondo">Shop</p>
+      <p class="font-secondary text=lg">Shop</p>
     </a>
 
-    <a
-      href="/contact"
-      class=" relative overflow-hidden px-5 py-2 group rounded-full bg-black text-white"
+    <!-- Cart Button -->
+    <button
+      on:click={toggleCart}
+      class="relative overflow-hidden px-5 py-2 group rounded-full bg-hot text-white hover:text-blue-400 duration-200"
     >
-      <h4 class="relative z-9 font-macondo">Contact Me!</h4>
-    </a>
+      <div class="flex items-center gap-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-shopping-cart"
+        >
+          <circle cx="8" cy="21" r="1" />
+          <circle cx="19" cy="21" r="1" />
+          <path
+            d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+          />
+        </svg>
+        <span class="font-secondary">Your Cart</span>
+        {#if cartItemCount > 0}
+          <span
+            class="bg-white text-hot rounded-full w-5 h-5 flex items-center justify-center text-xs"
+          >
+            {cartItemCount}
+          </span>
+        {/if}
+      </div>
+    </button>
   </div>
 
   <!-- MENU FOR SMALL SCREENS -->
@@ -46,13 +85,11 @@
         stroke-linecap="round"
         stroke-linejoin="round"
         class="lucide lucide-menu"
-        ><line x1="4" x2="20" y1="12" y2="12" /><line
-          x1="4"
-          x2="20"
-          y1="6"
-          y2="6"
-        /><line x1="4" x2="20" y1="18" y2="18" /></svg
       >
+        <line x1="4" x2="20" y1="12" y2="12" />
+        <line x1="4" x2="20" y1="6" y2="6" />
+        <line x1="4" x2="20" y1="18" y2="18" />
+      </svg>
     </button>
     <!-- DROPDOWN -->
     {#if isDropdownOpen}
@@ -66,10 +103,29 @@
         <a href="/shop" class="block ms-4 duration-200 hover:text-blue-400">
           Shop
         </a>
-        <a href="/contact" class="block ms-4 duration-200 hover:text-blue-400">
-          Contact Me!
-        </a>
+        <!-- Cart Button for Mobile -->
+        <button
+          on:click={() => {
+            toggleCart();
+            isDropdownOpen = false;
+          }}
+          class="block w-full text-left ms-4 duration-200 hover:text-blue-400"
+        >
+          <div class="flex items-center gap-2">
+            <span>Your Cart</span>
+            {#if cartItemCount > 0}
+              <span
+                class="bg-hot text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+              >
+                {cartItemCount}
+              </span>
+            {/if}
+          </div>
+        </button>
       </div>
     {/if}
   </div>
 </header>
+
+<!-- Cart Modal -->
+<CartModal isOpen={isCartOpen} on:close={() => (isCartOpen = false)} />
