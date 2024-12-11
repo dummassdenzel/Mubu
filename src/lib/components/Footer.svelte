@@ -20,7 +20,7 @@
                         >
                     </li>
                     <li>
-                        <a href="/about" class="text-gray-300 hover:text-white"
+                        <a href="/" class="text-gray-300 hover:text-white"
                             >Home</a
                         >
                     </li>

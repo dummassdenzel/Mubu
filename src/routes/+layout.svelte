@@ -19,14 +19,14 @@
 >
   <!-- SCROLL TO TOP BUTTON -->
   <div
-    class={"fixed bottom-0 w-full right-0 duration-200 flex p-10 z-[10] " +
+    class={"fixed bottom-0 w-full right-0 duration-200 flex p-10 " +
       (y > 0
         ? " opacity-full pointer-events-auto"
         : " pointer-events-none opacity-0")}
   >
     <button
       on:click={goTop}
-      class="shadow-md ml-auto rounded-full bg-primary text-black p-2 hover:bg-hot hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
+      class="shadow-md z-[10] ml-auto rounded-full bg-primary text-black p-2 hover:bg-hot hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
       aria-label="Scroll to top"
     >
       <svg

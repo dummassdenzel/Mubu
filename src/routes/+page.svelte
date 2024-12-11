@@ -1,8 +1,28 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade, fly } from "svelte/transition";
+    import Carousel from "$lib/components/Carousel.svelte";
 
     let isLoaded = false;
+
+    // NOTE TO SELF: Implement most viewed products in the future
+    const featuredProducts = [
+        {
+            url: "assets/featured1.png",
+            name: "Coffee Lover Sticker",
+            price: 15,
+        },
+        {
+            url: "assets/featured2.png",
+            name: "CS/IT Student Sticker",
+            price: 15,
+        },
+        {
+            url: "assets/featured3.png",
+            name: "Gokoru Bookmark",
+            price: 29,
+        },
+    ];
 
     onMount(() => {
         isLoaded = true;
@@ -136,21 +156,18 @@
                 </p>
             </div>
 
-            <!-- Add your featured products grid here -->
-            <div
-                class="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3"
-            >
-                <!-- Featured product cards can go here -->
+            <div class="mt-12 max-w-4xl mx-auto bg-accent">
+                <Carousel images={featuredProducts} autoplayInterval={3000} />
             </div>
 
-            <div class="mt-12 text-center">
+            <!-- <div class="mt-12 text-center">
                 <a
                     href="/shop"
-                    class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-6 py-3 text-lg font-semibold text-white transition-all hover:bg-gray-800"
+                    class="inline-flex items-center justify-center rounded-lg bg-hot px-6 py-3 text-lg font-semibold text-white transition-all hover:bg-gray-800"
                 >
                     View All Products
                 </a>
-            </div>
+            </div> -->
         </div>
     </section>
 
