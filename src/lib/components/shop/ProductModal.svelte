@@ -47,13 +47,11 @@
         }
     }
 
-    // Updated click handler
     function handleOutsideClick(event: MouseEvent) {
-        // Stop if clicking inside the modal content
-        if ((event.target as HTMLElement).closest(".modal-content")) {
-            return;
+        const target = event.target as HTMLElement;
+        if (!target.closest(".modal-content")) {
+            dispatch("close");
         }
-        dispatch("close");
     }
 </script>
 
@@ -61,102 +59,112 @@
 
 {#if isOpen}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <!-- svelte-ignore element_invalid_self_closing_tag -->
     <div
-        class="fixed z-10 inset-0 bg-black bg-opacity-50 modal-backdrop"
+        class="fixed inset-0 z-50 overflow-y-auto"
+        aria-labelledby="modal-title"
+        role="dialog"
+        aria-modal="true"
         on:click={handleOutsideClick}
         transition:fade={{ duration: 200 }}
     >
-        <div
-            class="fixed inset-0 flex items-center justify-center p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-title"
-        >
+        <!-- Backdrop -->
+        <div class="fixed inset-0 bg-black bg-opacity-50" />
+
+        <!-- Modal Container -->
+        <div class="flex min-h-screen items-center justify-center p-4">
             <!-- Modal Content -->
             <div
-                class="modal-content bg-white rounded-lg shadow-lg w-full relative max-h-[80%] max-w-[70%] max-sm:max-w-[90%] grid grid-cols-2 max-md:overflow-hidden max-sm:overflow-auto"
+                class="modal-content relative w-full max-w-4xl rounded-lg bg-white shadow-xl"
                 transition:fade={{ duration: 150 }}
             >
                 <!-- Close Button -->
                 <button
+                    type="button"
+                    class="absolute right-4 top-4 z-10 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none"
                     on:click={() => dispatch("close")}
-                    class="absolute top-2 right-2 text-gray-600 z-10 hover:text-gray-900 transition-colors"
                     aria-label="Close modal"
                 >
                     <svg
+                        class="h-6 w-6"
                         xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
                         fill="none"
+                        viewBox="0 0 24 24"
                         stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-x"
-                        ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
                     >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
                 </button>
 
-                <!-- Left Side: Image -->
+                <!-- Content Grid -->
                 <div
-                    class="col-span-1 max-sm:col-span-2 w-full bg-accent overflow-hidden flex justify-center items-center"
+                    class="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-lg"
                 >
-                    <img
-                        src={product.image_url}
-                        alt={product.name}
-                        class="max-h-[50vh] max-w-full object-contain"
-                        loading="lazy"
-                    />
-                </div>
+                    <!-- Image Section -->
+                    <div
+                        class="flex h-[400px] items-center justify-center bg-accent p-8"
+                    >
+                        <img
+                            src={product.image_url}
+                            alt={product.name}
+                            class="h-full w-full object-contain"
+                            loading="lazy"
+                        />
+                    </div>
 
-                <!-- Right Side: Details -->
-                <div class="col-span-1 max-sm:col-span-2 p-5">
-                    <section class="mt-10">
-                        <!-- Name & Series -->
-                        <div class="mb-6">
-                            <h2
-                                id="modal-title"
-                                class="text-xl md:text-2xl font-bold text-black"
-                            >
-                                {product.name}
-                            </h2>
-                            <h3 class="text-black mb-2">
-                                {product.series}
-                            </h3>
+                    <!-- Details Section -->
+                    <div class="flex flex-col p-6">
+                        <!-- Product Info -->
+                        <div class="mb-auto space-y-4">
+                            <div>
+                                <h2
+                                    id="modal-title"
+                                    class="text-2xl font-bold text-gray-900"
+                                >
+                                    {product.name}
+                                </h2>
+                                <p class="text-gray-600">{product.series}</p>
+                            </div>
+
+                            <p class="text-3xl font-bold text-hot">
+                                ₱{Number(product.price).toLocaleString()}.00
+                            </p>
+
+                            <!-- Product Details -->
+                            <div class="space-y-3 text-gray-700">
+                                <p>
+                                    <span class="font-semibold">Size:</span>
+                                    {product.size}
+                                </p>
+                                <p>
+                                    <span class="font-semibold">Material:</span>
+                                    {product.material}
+                                </p>
+                                <p>
+                                    <span class="font-semibold"
+                                        >Description:</span
+                                    >
+                                    {product.description}
+                                </p>
+                            </div>
                         </div>
-
-                        <!-- Price -->
-                        <h2 class="text-red-600 text-lg md:text-3xl mb-4">
-                            ₱{Number(product.price).toFixed(2)}
-                        </h2>
 
                         <!-- Add to Cart Button -->
                         <button
-                            class="bg-hot text-white text-2xl py-1 px-10 font-primary mb-10 hover:bg-red-600 transition-colors disabled:bg-gray-400"
+                            type="button"
+                            class="mt-6 w-full rounded-md bg-hot px-6 py-3 text-center text-lg font-semibold text-white transition-colors hover:bg-red-600 disabled:bg-gray-400"
                             on:click={handleAddToCart}
                             disabled={!product.stock}
                         >
                             {product.stock ? "Add to Cart" : "Out of Stock"}
                         </button>
-
-                        <!-- Product Details -->
-                        <div class="space-y-2 text-black">
-                            <p>
-                                <strong>Size:</strong>
-                                {product.size}
-                            </p>
-                            <p>
-                                <strong>Material:</strong>
-                                {product.material}
-                            </p>
-                            <p>
-                                <strong>Description:</strong>
-                                {product.description}
-                            </p>
-                        </div>
-                    </section>
+                    </div>
                 </div>
             </div>
         </div>

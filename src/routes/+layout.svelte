@@ -26,7 +26,7 @@
   >
     <button
       on:click={goTop}
-      class="ml-auto rounded-full bg-primary text-black p-2 hover:bg-hot hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
+      class="shadow-md ml-auto rounded-full bg-primary text-black p-2 hover:bg-hot hover:text-white duration-200 cursor-pointer aspect-square grid place-items-center"
       aria-label="Scroll to top"
     >
       <svg
