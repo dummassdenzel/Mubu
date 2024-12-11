@@ -11,6 +11,7 @@
   let activeCategory = "All";
   let mounted = false;
   let isCartOpen = false;
+  let searchQuery = "";
 
   const categories = [
     "All",
@@ -20,9 +21,6 @@
     "Posters",
     "Cards",
   ];
-
-  // Get total items in cart
-  // $: cartItemCount = $cart.reduce((sum, item) => sum + item.quantity, 0);
 
   onMount(async () => {
     try {
@@ -37,6 +35,12 @@
     mounted = false;
     selectedProduct = null;
   });
+
+  function handleSearch(event: Event) {
+    const target = event.target as HTMLInputElement;
+    searchQuery = target.value;
+    products.setSearchQuery(searchQuery);
+  }
 
   function filterByCategory(category: string) {
     if (!mounted) return;
@@ -72,26 +76,62 @@
 </script>
 
 <!-- WHOLE SECTION -->
-<section class="flex flex-col md:flex-row">
+<section class="min-h-screen flex flex-col md:flex-row bg-gray-50">
   {#if mounted}
-    <aside
-      class="md:w-64 z-[10] md:h-screen w-full md:block bg-white shadow-2xl sticky top-[0] flex flex-col justify-between"
-    >
-      <ul
-        class="gap-4 md:gap-0 text-black p-5 text-sm md:text-base flex md:flex-col flex-row overflow-auto justify-center md:justify-center md:mt-7"
-      >
-        {#each categories as category}
-          <button
-            class="md:border-b md:border-slate-300 md:py-3 {activeCategory ===
-            category
-              ? 'text-red-500 font-bold'
-              : ''}"
-            on:click={() => filterByCategory(category)}
-          >
-            {category}
-          </button>
-        {/each}
-      </ul>
+    <aside class="md:w-64 md:h-screen bg-white shadow-lg sticky top-0">
+      <nav class="p-4 md:p-6">
+        <!-- SEARCH BAR -->
+        <div class="mb-6">
+          <div class="relative">
+            <input
+              type="search"
+              placeholder="Search products..."
+              class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-hot"
+              value={searchQuery}
+              on:input={handleSearch}
+            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <h2
+          class="text-lg font-semibold font-primary mb-4 text-center hidden md:block"
+        >
+          Categories:
+        </h2>
+        <ul
+          class="flex md:flex-col overflow-x-auto md:overflow-visible gap-2 md:gap-1"
+        >
+          {#each categories as category}
+            <li>
+              <button
+                class="w-full text-left px-4 py-2 font-primary rounded-lg transition-colors whitespace-nowrap
+                  {activeCategory === category
+                  ? 'bg-hot/10 text-hot font-medium'
+                  : 'hover:bg-gray-100 text-gray-700'}
+                "
+                on:click={() => filterByCategory(category)}
+                aria-current={activeCategory === category ? "page" : undefined}
+              >
+                {category}
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </nav>
     </aside>
 
     <!-- CONTENT -->
@@ -116,40 +156,7 @@
       </section>
     </div>
 
-    <!-- Cart Button (Fixed Position) -->
-    <!-- <button
-      on:click={toggleCart}
-      class="fixed bottom-6 right-6 z-40 w-12 h-12 bg-hot text-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-colors"
-      aria-label="Open Cart"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="white"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-shopping-cart"
-      >
-        <circle cx="8" cy="21" r="1" />
-        <circle cx="19" cy="21" r="1" />
-        <path
-          d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
-        />
-      </svg>
-      {#if cartItemCount > 0}
-        <span
-          class="absolute -top-2 -right-2 bg-white text-hot rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold"
-        >
-          {cartItemCount}
-        </span>
-      {/if}
-    </button> -->
-
-    <!-- Cart Modal -->
+    <!-- CART MODAL -->
     <CartModal isOpen={isCartOpen} on:close={() => (isCartOpen = false)} />
   {/if}
 </section>

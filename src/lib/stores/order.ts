@@ -18,7 +18,7 @@ export interface Order {
     customer_phone: string;
     shipping_address: string;
     total_amount: number;
-    status: 'pending' | 'paid' | 'completed' | 'cancelled';
+    // status: 'pending' | 'paid' | 'completed' | 'cancelled';
     created_at?: string;
     updated_at?: string;
     order_items: OrderItem[];

@@ -19,21 +19,36 @@ export interface Product {
 function createProductStore() {
     const { subscribe, set, update } = writable<Product[]>([]);
     const { subscribe: subscribeToCategoryFilter, set: setCategory } = writable<string>('All');
+    const { subscribe: subscribeToSearch, set: setSearch } = writable<string>('');
 
     // DERIVED STORE FOR FILTERING PRODUCTS BY CATEGORY
     const filteredProducts = derived(
-        [{ subscribe }, { subscribe: subscribeToCategoryFilter }],
-        ([$products, $category]) => {
-            if ($category === 'All') {
-                return $products;
+        [{ subscribe }, { subscribe: subscribeToCategoryFilter }, { subscribe: subscribeToSearch }],
+        ([$products, $category, $search]) => {
+            let filtered = $products;
+
+            // Apply search filter
+            if ($search) {
+                const searchLower = $search.toLowerCase();
+                filtered = filtered.filter(product => 
+                    product.name.toLowerCase().includes(searchLower) ||
+                    product.description.toLowerCase().includes(searchLower) ||
+                    product.series.toLowerCase().includes(searchLower)
+                );
             }
-            return $products.filter(product => product.category === $category);
+
+            // Apply category filter
+            if ($category === 'All') {
+                return filtered;
+            }
+            return filtered.filter(product => product.category === $category);
         }
     );
 
     return {
         subscribe: filteredProducts.subscribe,
         setCategory,
+        setSearchQuery: setSearch,
         fetchProducts: async () => {
             try {
                 const response = await api.get('products');
