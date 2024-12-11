@@ -4,37 +4,44 @@
     import { createEventDispatcher } from "svelte";
     import { goto } from "$app/navigation";
 
+    // Set up event dispatcher for modal close events
     const dispatch = createEventDispatcher<{
         close: void;
     }>();
 
+    // Props
     export let isOpen: boolean;
 
-    // Calculate total
+    // Reactive statement to calculate total cart value
     $: total = cart.getTotal($cart);
 
+    // Handler for updating item quantities
     function handleUpdateQuantity(id: number, quantity: number) {
         cart.updateQuantity(id, quantity);
     }
 
+    // Close modal when Escape key is pressed
     function handleKeydown(event: KeyboardEvent) {
         if (event.key === "Escape" && isOpen) {
             dispatch("close");
         }
     }
 
+    // Close modal when clicking outside the modal content
     function handleOutsideClick(event: MouseEvent) {
         if ((event.target as HTMLElement).closest(".modal-content")) {
-            return;
+            return; // Click was inside modal, don't close
         }
         dispatch("close");
     }
 
+    // Navigate to checkout and close modal
     function handleCheckout() {
         dispatch("close");
         goto("/checkout");
     }
 
+    // Navigate back to shop and close modal
     async function handleContinueShopping() {
         dispatch("close");
         await goto("/shop");

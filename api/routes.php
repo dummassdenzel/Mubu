@@ -56,18 +56,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
     case 'GET':
         switch ($request[0]) {
-            case 'users':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
-                if (count($request) > 1) {
-                    echo json_encode($get->get_users($request[1]));
-                } else {
-                    echo json_encode($get->get_users());
-                }
-                break;
+
             case 'products':
-                // ENDPOINT PROTECTION
-                // $user = $auth->authenticateRequest();
                 if (count($request) > 1) {
                     echo json_encode($get->get_products($request[1]));
                 } else {
@@ -77,10 +67,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
             case 'orders':
                 if (count($request) > 1) {
-                    // Get specific order by ID
                     echo json_encode($get->get_orders($request[1]));
                 } else {
-                    // Get all orders
                     echo json_encode($get->get_orders());
                 }
                 break;
@@ -123,20 +111,18 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
 
     case 'POST':
-        // Check the Content-Type header
+        // CHECK THE CONTENT TYPE HEADER
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 
         if (strpos($contentType, 'application/json') !== false) {
             // Handle JSON data
             $data = json_decode(file_get_contents("php://input"));
-            // Process JSON data
+
         } elseif (strpos($contentType, 'multipart/form-data') !== false) {
             // Handle form data
             $data = $_POST;
             $files = $_FILES;
-            // Process form data and files
         } else {
-            // Unsupported content type
             echo "Unsupported Content Type";
             http_response_code(415);
             exit();

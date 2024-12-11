@@ -5,14 +5,17 @@
     import { createEventDispatcher } from "svelte";
     import Swal from "sweetalert2";
 
+    // Set up event dispatcher for modal close events
     const dispatch = createEventDispatcher<{
         close: void;
         addToCart: Product;
     }>();
 
+    // Props
     export let product: Product;
     export let isOpen: boolean;
 
+    // Add to cart
     function handleAddToCart() {
         cart.addToCart({
             id: product.id,
@@ -47,6 +50,7 @@
         }
     }
 
+    // Close modal when clicking outside the modal content
     function handleOutsideClick(event: MouseEvent) {
         const target = event.target as HTMLElement;
         if (!target.closest(".modal-content")) {

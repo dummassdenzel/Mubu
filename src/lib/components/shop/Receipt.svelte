@@ -3,10 +3,14 @@
     import { jsPDF } from "jspdf";
     import html2canvas from "html2canvas";
 
+    // Props
     export let order: any;
     export let onClose: () => void;
+
+    // Reference to the receipt content div for PDF generation
     let receiptContent: HTMLDivElement;
 
+    // Format date string to a readable format
     const formatDate = (dateString: string) => {
         if (!dateString) return "N/A";
         return new Date(dateString).toLocaleDateString("en-US", {
@@ -18,32 +22,41 @@
         });
     };
 
+    // Handle browser print functionality
     const handlePrint = () => {
         window.print();
     };
 
+    // Handle PDF download
     const handleDownload = async () => {
         try {
+            // Convert HTML content to canvas
             const canvas = await html2canvas(receiptContent, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
+                scale: 2, // Higher resolution
+                useCORS: true, // Allow cross-origin images
+                logging: false, // Disable debug logs
                 backgroundColor: "#ffffff",
+                // Add padding to prevent content cutoff
                 windowWidth: receiptContent.scrollWidth + 50,
                 windowHeight: receiptContent.scrollHeight + 50,
             });
 
+            // Convert canvas to image data
             const imgData = canvas.toDataURL("image/png");
+
+            // Create new PDF document
             const pdf = new jsPDF({
                 orientation: "portrait",
                 unit: "mm",
                 format: "a4",
             });
 
+            // Calculate dimensions to maintain aspect ratio
             const imgProps = pdf.getImageProperties(imgData);
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
+            // Add image to PDF and save
             pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
             pdf.save(`MUBU-Receipt-${order.receipt_number}.pdf`);
         } catch (error) {
