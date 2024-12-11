@@ -104,6 +104,14 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     }
                 }
                 break;
+            case 'receipt':
+                if (count($request) > 1) {
+                    echo json_encode($get->get_receipt($request[1]));
+                } else {
+                    http_response_code(400);
+                    echo json_encode(["message" => "Order ID is required"]);
+                }
+                break;
 
             default:
                 // RESPONSE FOR UNSUPPORTED REQUESTS

@@ -24,12 +24,6 @@
                             >Home</a
                         >
                     </li>
-                    <!-- <li>
-                        <a
-                            href="/contact"
-                            class="text-gray-300 hover:text-white">Contacts</a
-                        >
-                    </li> -->
                 </ul>
             </div>
 
@@ -38,7 +32,7 @@
                 <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
                 <ul class="space-y-2 text-gray-300">
                     <li>Email: denzelmanzperez@gmail.com</li>
-                    <!-- <li>Follow me on social media</li> -->
+                    <li>Facebook: facebook.com/DumbassDenzel</li>
                 </ul>
             </div>
         </div>

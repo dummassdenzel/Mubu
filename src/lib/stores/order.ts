@@ -108,6 +108,19 @@ function createOrderStore() {
 
         clearOrder: () => {
             set(null);
+        },
+
+        async getReceipt(orderId: number) {
+            try {
+                const response = await api.get(`receipt/${orderId}`);
+                if (response.status === "failed") {
+                    throw new Error(response.message);
+                }
+                return response.payload;
+            } catch (error) {
+                console.error('Error getting receipt:', error);
+                throw error;
+            }
         }
     };
 }

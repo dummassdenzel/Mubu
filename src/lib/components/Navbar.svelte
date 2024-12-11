@@ -17,7 +17,7 @@
   class="sticky z-[50] top-0 duration-200 py-4 px-8 flex w-full items-center justify-between border-b border-solid bg-primary text-black"
 >
   <!-- NAVBAR TITLE -->
-  <h1 class="text-4xl ml-5 font-bold font-primary">Mubu</h1>
+  <h1 class="text-4xl ml-5 font-bold font-primary">MUBU</h1>
 
   <!-- MENU FOR LARGE SCREENS -->
   <div class="sm:flex items-center gap-10 hidden">

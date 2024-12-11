@@ -156,4 +156,47 @@ class Get extends GlobalMethods
         }
     }
 
+    public function get_receipt($orderId)
+    {
+        try {
+            $baseUrl = "http://localhost/mubu/api";
+
+            // Get order with customer and items details
+            $sql = "SELECT o.*, 
+                           u.first_name as customer_first_name,
+                           u.last_name as customer_last_name,
+                           pp.uploaded_at as payment_date
+                    FROM orders o
+                    LEFT JOIN users u ON o.customer_email = u.email
+                    LEFT JOIN paymentproofs pp ON o.id = pp.order_id
+                    WHERE o.id = ?";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$orderId]);
+            $order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$order) {
+                return $this->sendPayload(null, "failed", "Order not found", 404);
+            }
+
+            // Get order items
+            $sqlItems = "SELECT oi.*, p.name as product_name, 
+                        CONCAT('$baseUrl/uploads/products/', p.image_url) as image_url
+                        FROM orderitems oi
+                        LEFT JOIN products p ON oi.product_id = p.id
+                        WHERE oi.order_id = ?";
+
+            $stmtItems = $this->pdo->prepare($sqlItems);
+            $stmtItems->execute([$orderId]);
+            $orderItems = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
+
+            $order['order_items'] = $orderItems;
+            $order['receipt_number'] = 'MUBU-' . str_pad($order['id'], 6, '0', STR_PAD_LEFT);
+
+            return $this->sendPayload($order, "success", "Successfully retrieved receipt", 200);
+        } catch (PDOException $e) {
+            return $this->sendPayload(null, "failed", $e->getMessage(), 400);
+        }
+    }
+
 }

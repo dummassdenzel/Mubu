@@ -1,9 +1,9 @@
 <script lang="ts">
     import { page } from "$app/stores";
     import { order } from "$lib/stores/order";
+    import Receipt from "$lib/components/shop/Receipt.svelte";
     import { onMount } from "svelte";
     import { goto } from "$app/navigation";
-    import Swal from "sweetalert2";
 
     const orderId = Number($page.params.orderId);
 
@@ -11,6 +11,7 @@
     let paymentFile: File | null = null;
     let loading = false;
     let error = "";
+    let showReceipt = false;
 
     onMount(async () => {
         try {
@@ -51,15 +52,9 @@
 
             await order.uploadPaymentProof(orderId, paymentFile);
 
-            Swal.fire({
-                title: "Success!",
-                text: "Payment proof uploaded successfully! We'll process your order soon.",
-                icon: "success",
-                confirmButtonText: "Alright!",
-                confirmButtonColor: "#BF3D3D",
-            });
+            currentOrder = await order.getReceipt(orderId);
 
-            goto("/shop");
+            showReceipt = true;
         } catch (err) {
             error =
                 err instanceof Error
@@ -68,6 +63,11 @@
         } finally {
             loading = false;
         }
+    }
+
+    function handleCloseReceipt() {
+        showReceipt = false;
+        goto("/shop");
     }
 </script>
 
@@ -229,3 +229,7 @@
         {/if}
     </div>
 </div>
+
+{#if showReceipt}
+    <Receipt order={currentOrder} onClose={handleCloseReceipt} />
+{/if}
