@@ -1,68 +1,73 @@
-// My Base URL for all API requests
+import EncryptionService from './encryption';
+
 const BASE_URL = "http://localhost/mubu/api";
 
-// Utility function to handle authenticated API requests
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}) {
-  // Get authentication token from localStorage
   const token = localStorage.getItem("token");
 
-  // Construct headers object: (THIS ISNT NECESSARY FOR NOW, BUT I'M KEEPING IT FOR FUTURE USE)
-  // - Set default Content-Type to JSON
-  // - Add Authorization header if token exists
-  // - Merge any additional headers from options
   const headers = {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
     ...options.headers,
   };
 
-  // Make the API request with constructed headers and any additional options
+  // Encrypt request body if present
+  if (options.body && typeof options.body === 'string') {
+    const data = JSON.parse(options.body);
+    options.body = JSON.stringify({
+      encrypted: EncryptionService.encrypt(data)
+    });
+  }
+
   const response = await fetch(`${BASE_URL}/${endpoint}`, {
     ...options,
     headers,
   });
 
-  // Handle error responses
   if (!response.ok) {
     const errorData = await response.json();
     throw new Error(errorData.status?.message || 'Request failed');
   }
 
-  // Parse and return JSON response
   const jsonResponse = await response.json();
+
+  // Decrypt payload if it's encrypted
+  if (jsonResponse.payload && typeof jsonResponse.payload === 'string') {
+    jsonResponse.payload = EncryptionService.decrypt(jsonResponse.payload);
+  }
+
   return jsonResponse;
 }
 
-// Export API utility object with common HTTP methods
 export const api = {
-  // GET request
   get: (endpoint: string) => fetchWithAuth(endpoint),
-
-  // POST request for JSON data
   post: (endpoint: string, data: any) =>
     fetchWithAuth(endpoint, {
       method: "POST",
       body: JSON.stringify(data),
     }),
-
-  // Special POST method for handling FormData
-  // This DOESN'T use fetchWithAuth because FormData requires different content-type handling
   postFormData: async (endpoint: string, formData: FormData) => {
     try {
-        const response = await fetch(`${BASE_URL}/${endpoint}`, {
-            method: 'POST',
-            body: formData,
-        });
+      const response = await fetch(`${BASE_URL}/${endpoint}`, {
+        method: 'POST',
+        body: formData,
+      });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        const data = await response.json();
-        return data;
+      const data = await response.json();
+      
+      // Decrypt payload if it's encrypted
+      if (data.payload && typeof data.payload === 'string') {
+        data.payload = EncryptionService.decrypt(data.payload);
+      }
+      
+      return data;
     } catch (error) {
-        console.error('API Error:', error);
-        throw error;
+      console.error('API Error:', error);
+      throw error;
     }
   },
 };

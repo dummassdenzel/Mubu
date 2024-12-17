@@ -13,6 +13,11 @@ class Post extends GlobalMethods
         $this->pdo = $pdo;
     }
 
+    public function getRequestData()
+    {
+        return $this->encryption->processRequestData();
+    }
+
     public function userLogin($data)
     {
         try {
